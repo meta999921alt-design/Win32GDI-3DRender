@@ -57,6 +57,7 @@ Window::~Window() {
 Window::InputState Window::poll() {
     pendingYaw_ = 0;
     pendingPitch_ = 0;
+    resetPressed_ = false;
 
     MSG msg;
     while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -69,6 +70,7 @@ Window::InputState Window::poll() {
     s.quit = shouldQuit_;
     s.yawDelta = pendingYaw_;
     s.pitchDelta = pendingPitch_;
+    s.reset = resetPressed_;
     s.fwd = (keyW_ ? 1.0 : 0.0) - (keyS_ ? 1.0 : 0.0);
     s.right = (keyD_ ? 1.0 : 0.0) - (keyA_ ? 1.0 : 0.0);
     return s;
@@ -116,6 +118,7 @@ LRESULT Window::handleMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 case 'A': keyA_ = down; break;
                 case 'S': keyS_ = down; break;
                 case 'D': keyD_ = down; break;
+                case 'R': if (down) resetPressed_ = true; break;
                 case VK_ESCAPE: if (down) shouldQuit_ = true; break;
             }
             return 0;

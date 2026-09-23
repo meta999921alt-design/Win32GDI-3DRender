@@ -1,16 +1,30 @@
 #include "app.h"
 #include "scene.h"
+#include "constants.h"
 #include <algorithm>
 #include <thread>
 #include <cmath>
+
+namespace {
+PhysicsEngine buildPhysics() {
+    PhysicsEngine engine;
+    engine.addPlane({ Vector3(0, kFloorY, 0), Vector3(0, 1, 0), 0.25, 0.5 });
+    engine.addPlane({ kRampBase, kRampNormal, 0.15, 0.15 });
+
+    Vector3 spawn = kRampBase + kRampSlopeDir * (kRampLength * 0.85) + Vector3(0, 0.8, 0);
+    engine.addBody(RigidBody(spawn, 0.4, 1.0, Color(220, 70, 70), 0.35, 0.2));
+    return engine;
+}
+}
 
 App::App()
     : threads_(std::max(1u, std::thread::hardware_concurrency())),
       pool_(threads_),
       w_(kWindowWidth),
       h_(kWindowHeight),
-      window_(w_, h_, "Raytracer Demo"),
+      window_(w_, h_, "Physics Demo"),
       camera_(w_, h_),
+      physics_(buildPhysics()),
       pixels_((size_t)w_ * h_, 0)
 {
 }
@@ -32,10 +46,11 @@ void App::run() {
         if (in.quit) break;
         camera_.rotate(in.yawDelta, in.pitchDelta);
         camera_.move(in.fwd * 3.0 * dt, in.right * 3.0 * dt);
+        if (in.reset) physics_.reset();
 
-        world_.update(dt);
+        physics_.step(dt);
 
-        Scene scene = buildScene(t, world_);
+        Scene scene = buildScene(t, physics_);
         render(scene);
         auto afterRender = clock::now();
 
@@ -56,8 +71,9 @@ void App::run() {
             renderMsAccum = 0;
             presentMsAccum = 0;
             window_.setTitle(
-                "Raytracer Demo - " + std::to_string((int)fps) + " fps | render " +
-                std::to_string((int)avgRender) + "ms present " + std::to_string((int)avgPresent) + "ms"
+                "Physics Demo - " + std::to_string((int)fps) + " fps | render " +
+                std::to_string((int)avgRender) + "ms present " + std::to_string((int)avgPresent) +
+                "ms | R to reset ball"
             );
         }
 

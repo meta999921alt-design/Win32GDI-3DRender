@@ -25,6 +25,7 @@ public:
     struct InputState {
         double yawDelta = 0, pitchDelta = 0;
         double fwd = 0, right = 0;
+        bool reset = false;
         bool quit = false;
     };
 
@@ -47,6 +48,7 @@ private:
     bool shouldQuit_ = false;
 
     bool keyW_ = false, keyA_ = false, keyS_ = false, keyD_ = false;
+    bool resetPressed_ = false;
     bool rightDown_ = false;
     bool haveLastMouse_ = false;
     int lastMouseX_ = 0, lastMouseY_ = 0;

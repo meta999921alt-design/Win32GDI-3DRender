@@ -28,7 +28,7 @@ Vector3 Camera::strafe() const { return { cosYaw_, 0, -sinYaw_ }; }
 
 Ray Camera::rayForPixel(int x, int y) const {
     double sx = ((2.0 * (x + 0.5)) / w_ - 1.0) * 1.1;
-    double sy = ((2.0 * (y + 0.5)) / h_ - 1.0) * 0.6;
+    double sy = -((2.0 * (y + 0.5)) / h_ - 1.0) * 0.6; // 화면 위쪽(y=0)이 world +Y(위)를 가리키도록 부호 반전
 
     // 프레임당 한 번만 계산된 캐시값을 그대로 씀 (픽셀마다 sin/cos 재계산 X)
     double py = sy * cosPitch_ + 1.0 * sinPitch_;

@@ -29,6 +29,6 @@ private:
     int w_, h_;
     Window window_;
     Camera camera_;
-    World world_;
+    PhysicsEngine physics_;
     std::vector<uint32_t> pixels_;
 };
